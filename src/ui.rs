@@ -1,6 +1,6 @@
 use ratatui::{
     Frame,
-    layout::{Constraint, Direction, Layout, Rect},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::{Block, Borders, Gauge, LineGauge, List, ListItem, ListState, Paragraph, Wrap},
@@ -8,13 +8,13 @@ use ratatui::{
 
 use crate::app::{App, FileType};
 
-pub fn draw(f: &mut Frame, app: &mut App) {
+pub fn draw(f: &mut Frame, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(3), // Header
-            Constraint::Min(0),    // Main content
-            Constraint::Length(4), // Footer (Progress + Volume)
+            Constraint::Length(3),
+            Constraint::Min(0),
+            Constraint::Length(4),
         ])
         .split(f.area());
 
@@ -30,22 +30,22 @@ fn draw_header(f: &mut Frame, app: &App, area: Rect) {
             Style::default()
                 .fg(Color::Cyan)
                 .add_modifier(Modifier::BOLD),
-        ) // Miku Cyan
+        )
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .border_style(Style::default().fg(Color::LightBlue)),
-        ) // Miku Blue
-        .alignment(ratatui::layout::Alignment::Center);
+        )
+        .alignment(Alignment::Center);
     f.render_widget(title, area);
 }
 
-fn draw_main(f: &mut Frame, app: &mut App, area: Rect) {
+fn draw_main(f: &mut Frame, app: &App, area: Rect) {
     let chunks = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([
-            Constraint::Percentage(60), // Browser
-            Constraint::Percentage(40), // Info
+            Constraint::Percentage(60),
+            Constraint::Percentage(40),
         ])
         .split(area);
 
@@ -53,7 +53,7 @@ fn draw_main(f: &mut Frame, app: &mut App, area: Rect) {
     draw_info(f, app, chunks[1]);
 }
 
-fn draw_browser(f: &mut Frame, app: &mut App, area: Rect) {
+fn draw_browser(f: &mut Frame, app: &App, area: Rect) {
     let items: Vec<ListItem> = app
         .browser_items
         .iter()
@@ -106,8 +106,9 @@ fn draw_info(f: &mut Frame, app: &App, area: Rect) {
             .file_name()
             .unwrap_or_default()
             .to_string_lossy()
+            .into_owned()
     } else {
-        "No song playing".into()
+        "No song playing".to_string()
     };
 
     let status = if app.is_playing {
@@ -115,7 +116,6 @@ fn draw_info(f: &mut Frame, app: &App, area: Rect) {
     } else {
         "Paused ⏸"
     };
-    // let _vol = app.volume; // unused
 
     let info_text = vec![
         Line::from(vec![Span::styled(
@@ -190,16 +190,15 @@ fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(1), // Progress
-            Constraint::Length(1), // Volume
+            Constraint::Length(1),
+            Constraint::Length(1),
         ])
         .split(area);
 
-    // Progress Bar
     let (elapsed_sec, duration_sec, ratio) = if let Some(d) = app.duration {
         let e = app.elapsed.as_secs_f64();
         let t = d.as_secs_f64();
-        (e, t, (e / t).min(1.0))
+        (e, t, (e / t).clamp(0.0, 1.0))
     } else {
         (0.0, 0.0, 0.0)
     };
@@ -227,8 +226,7 @@ fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
 
     f.render_widget(progress, chunks[0]);
 
-    // Volume Bar (Slim)
-    let volume_ratio = app.volume as f64 / 100.0;
+    let volume_ratio = (app.volume as f64 / 100.0).clamp(0.0, 1.0);
     let vol_label = format!("VOL: {}%", app.volume);
 
     let vol_gauge = Gauge::default()

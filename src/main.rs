@@ -15,23 +15,21 @@ use app::App;
 use events::{Event, Events};
 
 fn main() -> Result<()> {
-    // Setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    // Create App and Events
     let mut app = App::new()?;
     let events = Events::new();
 
     loop {
-        terminal.draw(|f| ui::draw(f, &mut app))?;
+        terminal.draw(|f| ui::draw(f, &app))?;
 
         match events.next()? {
             Event::Input(key) => {
-                if key.code == KeyCode::Char('q') || key.code == KeyCode::Esc {
+                if matches!(key.code, KeyCode::Char('q') | KeyCode::Esc) {
                     break;
                 }
                 match key.code {
@@ -54,7 +52,6 @@ fn main() -> Result<()> {
         }
     }
 
-    // Restore terminal
     disable_raw_mode()?;
     execute!(
         terminal.backend_mut(),

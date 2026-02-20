@@ -10,8 +10,6 @@ pub enum Event<I> {
 
 pub struct Events {
     rx: mpsc::Receiver<Event<KeyEvent>>,
-    _input_handle: thread::JoinHandle<()>,
-    _tick_handle: thread::JoinHandle<()>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -34,38 +32,32 @@ impl Events {
 
     pub fn with_config(config: Config) -> Events {
         let (tx, rx) = mpsc::channel();
-        let _input_handle = {
-            let tx = tx.clone();
-            thread::spawn(move || {
-                loop {
-                    if let Ok(true) = event::poll(Duration::from_millis(100)) {
-                        if let Ok(CEvent::Key(key)) = event::read() {
-                            // Only send the event if it's a Press
-                            if key.kind == KeyEventKind::Press {
-                                if let Err(_) = tx.send(Event::Input(key)) {
-                                    return;
-                                }
+
+        let tx_input = tx.clone();
+        thread::spawn(move || {
+            loop {
+                if let Ok(true) = event::poll(Duration::from_millis(100)) {
+                    if let Ok(CEvent::Key(key)) = event::read() {
+                        if key.kind == KeyEventKind::Press {
+                            if tx_input.send(Event::Input(key)).is_err() {
+                                return;
                             }
                         }
                     }
                 }
-            })
-        };
-        let _tick_handle = {
-            thread::spawn(move || {
-                loop {
-                    if let Err(_) = tx.send(Event::Tick) {
-                        break;
-                    }
-                    thread::sleep(config.tick_rate);
+            }
+        });
+
+        thread::spawn(move || {
+            loop {
+                if tx.send(Event::Tick).is_err() {
+                    break;
                 }
-            })
-        };
-        Events {
-            rx,
-            _input_handle,
-            _tick_handle,
-        }
+                thread::sleep(config.tick_rate);
+            }
+        });
+
+        Events { rx }
     }
 
     pub fn next(&self) -> Result<Event<KeyEvent>, mpsc::RecvError> {
