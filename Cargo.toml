@@ -1,0 +1,13 @@
+[package]
+name = "leek"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+crossterm = "0.29.0"
+directories = "6.0.0"
+rand = "0.10.0"
+ratatui = "0.30.0"
+rodio = { version = "0.17.3", features = ["mp3", "flac", "wav", "vorbis"] }
+walker = "1.0.1"
