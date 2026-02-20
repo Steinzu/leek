@@ -50,9 +50,11 @@ impl App {
         let (_stream, stream_handle) = OutputStream::try_default()?;
         let sink = Sink::try_new(&stream_handle)?;
 
-        // Determine starting directory
         let args: Vec<String> = env::args().collect();
-        let start_dir = if args.len() > 1 {
+
+        let start_dir = if args.contains(&String::from("-steins")) {
+            PathBuf::from(r"D:\Soulseek\share")
+        } else if args.len() > 1 {
             PathBuf::from(&args[1])
         } else if let Some(user_dirs) = UserDirs::new() {
             user_dirs
