@@ -56,23 +56,3 @@ If you built it locally without installing:
 ```bash
 ./target/release/leek
 ```
-
-### Key Bindings
-
-| Key | Action |
-| :--- | :--- |
-| **Navigation** | |
-| `Up` / `k` | Move selection up |
-| `Down` / `j` | Move selection down |
-| `Enter` | Enter directory / Play selected file |
-| `Backspace` | Go up one directory |
-| **Playback** | |
-| `Space` | Toggle Play / Pause |
-| `Tab` | Play all audio files in the selected folder |
-| `Left` | Previous Track |
-| `Right` | Next Track |
-| **Audio** | |
-| `PageUp` | Increase Volume |
-| `PageDown` | Decrease Volume |
-| **General** | |
-| `q` / `Esc` | Quit Application |
