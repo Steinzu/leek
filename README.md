@@ -2,6 +2,8 @@
 
 **Leek** is a lightweight, terminal-based music player (TUI) written in Rust. It allows you to browse your file system, play individual audio files, or queue up entire folders of music, all from the comfort of your command line.
 
+![Leek Screenshot](https://i.imgur.com/0D8K0R6.png)
+
 ## Features
 
 *   **File Browser**: Navigate your file system to find your music library.
