@@ -58,3 +58,8 @@ If you built it locally without installing:
 ```bash
 ./target/release/leek
 ```
+
+---
+
+This is my first rust TUI project and AI has been used to learn, correct and reformat code.
+I'd rather be transparent.
