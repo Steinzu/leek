@@ -74,10 +74,13 @@ impl App {
         if args.len() > 1 {
             return PathBuf::from(&args[1]);
         }
-        UserDirs::new()
-            .and_then(|ud| ud.audio_dir().map(|p| p.to_path_buf()))
-            .or_else(|| UserDirs::new().map(|ud| ud.home_dir().to_path_buf()))
-            .unwrap_or_else(|| PathBuf::from("."))
+        if let Some(ud) = UserDirs::new() {
+            ud.audio_dir()
+                .map(|p| p.to_path_buf())
+                .unwrap_or_else(|| ud.home_dir().join("Music"))
+        } else {
+            PathBuf::from(".")
+        }
     }
 
     fn is_audio_file(path: &Path) -> bool {
