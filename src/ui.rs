@@ -14,7 +14,7 @@ pub fn draw(f: &mut Frame, app: &App) {
         .constraints([
             Constraint::Length(3),
             Constraint::Min(0),
-            Constraint::Length(4),
+            Constraint::Length(2),
         ])
         .split(f.area());
 
@@ -128,7 +128,6 @@ fn draw_info(f: &mut Frame, app: &App, area: Rect) {
                 .fg(Color::Cyan)
                 .add_modifier(Modifier::BOLD),
         )]),
-        Line::from(""),
         Line::from(vec![Span::styled(
             format!("Status: {} ", status),
             Style::default().fg(Color::White),
@@ -141,7 +140,6 @@ fn draw_info(f: &mut Frame, app: &App, area: Rect) {
             ),
             Style::default().fg(Color::Gray),
         )]),
-        Line::from(""),
         Line::from(Span::styled(
             "Controls:",
             Style::default()

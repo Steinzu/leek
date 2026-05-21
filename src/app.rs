@@ -71,9 +71,6 @@ impl App {
     }
 
     fn determine_start_dir(args: &[String]) -> PathBuf {
-        if args.contains(&String::from("-steins")) {
-            return PathBuf::from(r"D:\Soulseek\share");
-        }
         if args.len() > 1 {
             return PathBuf::from(&args[1]);
         }
